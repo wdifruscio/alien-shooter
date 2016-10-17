@@ -10,6 +10,7 @@ var drawingSurface = canvas.getContext('2d');
 //sprites and assets into arrays.
 var sprites = [];
 var assetsToLoad = [];
+var messages = [];
 
 //===============================
 //==create sprites using tileset//
@@ -67,6 +68,26 @@ var aliens = [];
 //score
 var score = 0;
 var scoreNeededToWin = 60;
+
+//=========================
+//==      Messages     //==
+//=========================
+
+var scoreDisplay = Object.create(messageObject);
+scoreDisplay.font = "normal bold 30px 'Press Start 2P'";
+scoreDisplay.fillStyle = "slateblue";
+scoreDisplay.x = 400;
+scoreDisplay.y = 10;
+messages.push(scoreDisplay);
+
+var gameOverMessage = Object.create(messageObject);
+gameOverMessage.font = "normal bold 20px 'Press Start 2P'";
+gameOverMessage.fillStyle = "red";
+gameOverMessage.x = 70;
+gameOverMessage.y = 120;
+gameOverMessage.visible = false;
+messages.push(gameOverMessage);
+
 
 //=========================
 //==Controller/Listener//==
@@ -190,7 +211,7 @@ function playGame(){
         }
         //if bottom of screen
         if(alien.y > canvas.height + alien.height){
-            gameState === OVER;
+            gameState = OVER;
         }
     }
 //hit loop with destroy alien fnct
@@ -208,6 +229,10 @@ function playGame(){
                 j--;
             }
         }
+    }
+    scoreDisplay.text = score;
+    if(score === scoreNeededToWin){
+        gameState = OVER;
     }   
 }
 //destroy alien 
@@ -256,7 +281,14 @@ function fireMissile(){
 }
 
 function endGame(){
-
+    gameOverMessage.visible = true;
+    if (score < scoreNeededToWin){
+        gameOverMessage.text = "EARTH DESTROYED";
+    }
+    else{
+        gameOverMessage.x = 220;
+        gameOverMessage.text = "EARTH SAVED";
+    }
 }
 
 
@@ -273,6 +305,17 @@ function render(){
                 Math.floor(sprite.x), Math.floor(sprite.y),
                 sprite.width, sprite.height
             );
+        }
+    }
+    if (messages.length !== 0){
+        for (var i = 0; i < messages.length; i++){
+            var message = messages[i];
+            if (message.visible){
+                drawingSurface.font = message.font;
+                drawingSurface.fillStyle = message.fillStyle;
+                drawingSurface.textBaseline = message.textBaseline;
+                drawingSurface.fillText(message.text,message.x,message.y);
+            }
         }
     }    
 }
