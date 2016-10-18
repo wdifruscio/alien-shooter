@@ -37,11 +37,14 @@ var spriteObject =
 
 var alienObject = Object.create(spriteObject);
 alienObject.NORMAL = 1;
-alienObject.EXPLODED = 2;
+alienObject.DAMAGED = 2;
+alienObject.EXPLODED = 3;
 alienObject.state = alienObject.NORMAL;
 alienObject.update = function()
 {
-  this.sourceX = 0;
+  this.sourceX = 126;
+  this.sourceWidth = 32;
+  this.width = 32;
 };
 
 //--- The message object

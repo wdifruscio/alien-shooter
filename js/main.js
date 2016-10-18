@@ -27,14 +27,16 @@ sprites.push(background);
 
 var playerShip = Object.create(spriteObject);
 playerShip.x = canvas.width / 2 - playerShip.width / 2;
-playerShip.sourceX = 64;
+playerShip.sourceX = 0;
+playerShip.sourceWidth= 42;
+playerShip.width = 42;
 playerShip.y = 450;
 sprites.push(playerShip);
 
 //load tileset
 var image = new Image();
 image.addEventListener('load', loadHandler, false);
-image.src = "./assets/tileset.png";
+image.src = "./assets/tileset2.png";
 assetsToLoad.push(image);
 
 //asset loaded
@@ -63,6 +65,8 @@ var spaceKeyDown = false;
 // aliens
 var alienTimer = 0;
 var alienFrequency = 100;
+var alienTwoTimer = 0;
+var alienTwoFrequency = 250;
 var aliens = [];
 
 //score
@@ -83,8 +87,8 @@ messages.push(scoreDisplay);
 var gameOverMessage = Object.create(messageObject);
 gameOverMessage.font = "normal bold 20px 'Press Start 2P'";
 gameOverMessage.fillStyle = "red";
-gameOverMessage.x = 70;
-gameOverMessage.y = 120;
+gameOverMessage.x = 126;
+gameOverMessage.y = 236;
 gameOverMessage.visible = false;
 messages.push(gameOverMessage);
 
@@ -193,15 +197,23 @@ function playGame(){
 
     //alien stuff
     alienTimer++;
+    alienTwoTimer++;
 
     if(alienTimer === alienFrequency){
         makeAlien();
         alienTimer = 0;
-        //if 
         if (alienFrequency > 2){
             alienFrequency --;
         }       
     }
+    if(alienTwoTimer === alienTwoFrequency){
+        makeAlienTwo();
+        alienTwoTimer = 0;
+        //if 
+        // if (alienFrequency > 2){
+        //     alienFrequency --;
+        // }       
+    }    
     //move aliens
     for(var i = 0; i < aliens.length; i++){
         var alien = aliens[i];
@@ -241,10 +253,12 @@ function destroyAlien(alien){
     //change state
     alien.state = alien.EXPLODED;
     alien.update();
-    setTimeout(removeAlien,1000);
+    setTimeout(removeAlien,500);
     function removeAlien(){
         removeObject(alien,aliens);
         removeObject(alien,sprites);
+        removeObject(alienTwo,aliens);
+        removeObject(alienTwo,sprites);
     }
 
 }
@@ -252,21 +266,37 @@ function destroyAlien(alien){
 function makeAlien(){
     var alien = Object.create(alienObject);
     var randomPosition = Math.floor(Math.random() * (canvas.width / alien.width));
-    alien.sourceX = 32;
+    var randomVelocity = Math.random() + 2;
+    alien.sourceX = 42;
     alien.y = 0 - alien.height;
     alien.x = randomPosition * alien.width;
-    alien.vy = 1;
+    alien.vy = randomVelocity;
     sprites.push(alien);
     aliens.push(alien);
 }
 
+function makeAlienTwo(){
+    var alienTwo = Object.create(alienObject);
+    var randomPosition = Math.floor(Math.random() * (canvas.width / alienTwo.width));
+    var randomVelocity = Math.random() + 0.5;
+    alienTwo.sourceX = 74;
+    alienTwo.sourceWidth = 52;
+    alienTwo.width = 52;
+    alienTwo.y = 0 - alienTwo.height;
+    alienTwo.x = randomPosition * alienTwo.width;
+    alienTwo.vy = randomVelocity;
+    sprites.push(alienTwo);
+    aliens.push(alienTwo);
+    console.log('second alien');
+}
+
 function fireMissile(){
     var missile = Object.create(spriteObject);
-    missile.sourceX = 96;
-    missile.sourceWidth = 10;
-    missile.SourceHeight = 20;
-    missile.width = 10;
-    missile.height = 20;
+    missile.sourceX = 158;
+    missile.sourceWidth = 15;
+    missile.SourceHeight = 26;
+    missile.width = 15;
+    missile.height = 26;
 
     //center it
     missile.x = playerShip.centerX() - missile.halfWidth();
@@ -286,6 +316,7 @@ function endGame(){
         gameOverMessage.text = "EARTH DESTROYED";
     }
     else{
+        gameOverMessage.fillStyle = "green";
         gameOverMessage.x = 220;
         gameOverMessage.text = "EARTH SAVED";
     }
